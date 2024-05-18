@@ -4,6 +4,7 @@ ARG buildArch=amd64
 ARG toolboxUser=toolbox
 ARG toolboxUserUid=1000
 ARG toolboxUserGroup=toolbox
+ARG toolboxUserHome=/home/toolbox
 
 LABEL org.opencontainers.image.source="https://quay.io/repository/tlbueno/toolbox"
 
@@ -64,12 +65,13 @@ RUN set -x && \
     mv logcli-linux-amd64 /usr/local/bin/logcli && \
     rm -rf /tmp/logcli.zip
 
-RUN useradd -s /bin/bash -u "${toolboxUserUid}" -m -U "${toolboxUser}"
-COPY --chown=${toolboxUser}:${toolboxUser} .bashrc /home/toolbox/.bashrc
-COPY --chown=${toolboxUser}:${toolboxUser} .bashrc.d /home/toolbox/.bashrc.d
-COPY --chown=${toolboxUser}:${toolboxUser} .vimrc /home/toolbox/.vimrc
+RUN useradd -s /bin/bash -d ${toolboxUserHome} -u "${toolboxUserUid}" -m -U "${toolboxUser}"
+COPY --chown=${toolboxUser}:${toolboxUser} .bashrc ${toolboxUserHome}/.bashrc
+COPY --chown=${toolboxUser}:${toolboxUser} .bashrc.d ${toolboxUserHome}/.bashrc.d
+COPY --chown=${toolboxUser}:${toolboxUser} .vimrc ${toolboxUserHome}/.vimrc
+COPY --chown=${toolboxUser}:${toolboxUser} entrypoint.sh ${toolboxUserHome}/entrypoint.sh
 ENV LANG=en_US.utf8
 USER ${toolboxUser}
-ENTRYPOINT ["bash"]
-WORKDIR /home/toolbox
+WORKDIR ${toolboxUserHome}
+ENTRYPOINT ["bash", "-c", "exec ./entrypoint.sh"]
 
