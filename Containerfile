@@ -33,6 +33,7 @@ RUN set -x && \
         jq \
         kubectl \
         kubectl-bash-completion \
+        kustomize \
         less \
         make \
         musl-locales \
