@@ -1,7 +1,7 @@
 # toolbox
 
 An alpine linux container image with general tools to be used as a toolbox.  
-Check the [Containerfile](./Containerfile) for the details about installed tools.
+Check the [Containerfile](./Containerfile) for the details about installed tools in the [source repo](https://github.com/tlbueno/toolbox)
 
 ### How to use
 
