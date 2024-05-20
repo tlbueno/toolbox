@@ -1,6 +1,7 @@
 FROM alpine:latest
 
 ARG buildArch=amd64
+
 ARG toolboxUser=toolbox
 ARG toolboxUserUid=1000
 ARG toolboxUserGroup=toolbox
@@ -19,6 +20,7 @@ RUN set -x && \
         bzip2 \
         coreutils \
         curl \
+        file \
         gawk \
         gcompat \
         git \
@@ -39,6 +41,7 @@ RUN set -x && \
         musl-locales \
         musl-locales-lang \
         net-tools \
+        openjdk21-jre-headless \
         procps-ng \
         sed \
         shadow \
@@ -60,8 +63,10 @@ RUN set -x && \
     curl -sSL https://mirror.openshift.com/pub/openshift-v4/${buildArch}/clients/ocp/latest/openshift-client-linux.tar.gz | \
     tar -zx -C /opt/ocp-client && \
     ln -s /opt/ocp-client/oc /usr/local/bin/oc && \
+    echo "mqtt-cli install" && \
+    curl -sSL $(curl -sSL "https://api.github.com/repos/hivemq/mqtt-cli/releases/latest" | jq -r '.assets[] | .browser_download_url | select(test(".jar$"))') -o /usr/local/bin/mqtt-cli.jar && \
     echo "logcli install" && \
-    curl -sSL https://github.com/grafana/loki/releases/download/v2.9.8/logcli-linux-amd64.zip -o /tmp/logcli.zip && \
+    curl -sSL $(curl -sSL "https://api.github.com/repos/grafana/loki/releases/latest" | jq --arg regex "logcli-linux-$buildArch.zip" -r '.assets[] | .browser_download_url | select(test($regex))') -o /tmp/logcli.zip && \
     unzip /tmp/logcli.zip && \
     mv logcli-linux-amd64 /usr/local/bin/logcli && \
     rm -rf /tmp/logcli.zip
