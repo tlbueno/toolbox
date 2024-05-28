@@ -1,7 +1,6 @@
 FROM alpine:latest
 
 ARG buildArch=amd64
-
 ARG toolboxUser=toolbox
 ARG toolboxUserUid=1000
 ARG toolboxUserGroup=toolbox
@@ -38,6 +37,7 @@ RUN set -x && \
         kustomize \
         less \
         make \
+        mariadb-client \
         musl-locales \
         musl-locales-lang \
         net-tools \
