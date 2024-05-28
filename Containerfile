@@ -53,8 +53,8 @@ RUN set -x && \
         vim \
         wget \
         xz \
-        yq \
-        yq-bash-completion \
+        yq-go \
+        yq-go-bash-completion \
         && \
     echo "Configuring sudo" && \
     echo "%toolbox  ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/toolbox && \
