@@ -10,8 +10,7 @@ LABEL org.opencontainers.image.source="https://quay.io/repository/tlbueno/toolbo
 
 USER root
 
-RUN set -x && \
-    apk update && \
+RUN apk update && \
     apk upgrade && \
     apk add \
         bash \
@@ -54,11 +53,9 @@ RUN set -x && \
         wget \
         xz \
         yq-go \
-        yq-go-bash-completion \
-        && \
-    echo "Configuring sudo" && \
-    echo "%toolbox  ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/toolbox && \
-    echo "ocp client install" && \
+        yq-go-bash-completion
+
+RUN echo "ocp client install" && \
     mkdir /opt/ocp-client && \
     curl -sSL https://mirror.openshift.com/pub/openshift-v4/${buildArch}/clients/ocp/latest/openshift-client-linux.tar.gz | \
     tar -zx -C /opt/ocp-client && \
@@ -69,7 +66,15 @@ RUN set -x && \
     curl -sSL $(curl -sSL "https://api.github.com/repos/grafana/loki/releases/latest" | jq --arg regex "logcli-linux-$buildArch.zip" -r '.assets[] | .browser_download_url | select(test($regex))') -o /tmp/logcli.zip && \
     unzip /tmp/logcli.zip && \
     mv logcli-linux-amd64 /usr/local/bin/logcli && \
-    rm -rf /tmp/logcli.zip
+    rm -rf /tmp/logcli.zip && \
+    echo "artemis install" && \
+    export artemis_version=$(curl -sSL https://archive.apache.org/dist/activemq/activemq-artemis | grep "^<img" | sed -E -e 's#.*<a href="([0-9]+\.[0-9]+\.[0-9]+)/">.*#\1#' | sort -V | tail -1) && \
+    curl -sSL https://archive.apache.org/dist/activemq/activemq-artemis/${artemis_version}/apache-artemis-${artemis_version}-bin.tar.gz | \
+    tar -zx -C /opt && \
+    ln -s /opt/apache-artemis-${artemis_version}/bin/artemis /usr/local/bin/artemis
+
+RUN echo "configuring sudo" && \
+    echo "%toolbox  ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/toolbox
 
 RUN useradd -s /bin/bash -d ${toolboxUserHome} -u "${toolboxUserUid}" -m -U "${toolboxUser}"
 COPY --chown=${toolboxUser}:${toolboxUser} .bashrc ${toolboxUserHome}/.bashrc
