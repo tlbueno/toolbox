@@ -82,7 +82,7 @@ COPY --chown=${toolboxUser}:${toolboxUser} .bashrc.d ${toolboxUserHome}/.bashrc.
 COPY --chown=${toolboxUser}:${toolboxUser} .vimrc ${toolboxUserHome}/.vimrc
 COPY --chown=${toolboxUser}:${toolboxUser} entrypoint.sh ${toolboxUserHome}/entrypoint.sh
 ENV LANG=en_US.utf8
-USER ${toolboxUser}
+USER ${toolboxUserUid}
 WORKDIR ${toolboxUserHome}
 ENTRYPOINT ["bash", "-c", "exec ./entrypoint.sh"]
 
