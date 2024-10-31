@@ -1,0 +1,57 @@
+name: Build and Push Container Image
+
+on:
+  push:
+    tags:
+      - 'release/*.*.*'
+    branches:
+      - 'release/*.*.*'
+  workflow_dispatch:
+    inputs:
+      manual_branch:
+        description: "Specify a branch or tag (e.g., release/0.1.0)"
+        required: false
+        default: ""
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.manual_branch || github.ref_name }}
+
+      - name: Install Podman
+        run: |
+          sudo apt update
+          sudo apt install -y podman
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event.inputs.manual_branch }}" ]; then
+            REF="${{ github.event.inputs.manual_branch }}"
+          else
+            REF="${GITHUB_REF_NAME}"
+          fi
+          VERSION="${REF#release/}"
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Build container image
+        run: |
+          IMAGE_TAG="toolbox:${{ env.VERSION }}"
+          podman build -t $IMAGE_TAG .
+
+      - name: Log in to GitHub Container Registry
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GITHUB_TOKEN" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image to GitHub Container Registry
+        run: |
+          GITHUB_IMAGE="ghcr.io/${{ github.repository_owner }}/toolbox:${{ env.VERSION }}"
+          podman tag toolbox:${{ env.VERSION }} $GITHUB_IMAGE
+          podman push $GITHUB_IMAGE
+
