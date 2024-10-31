@@ -3,13 +3,13 @@ name: Build and Push Container Image
 on:
   push:
     tags:
-      - 'release/*.*.*'
+      - 'releases/*.*.*'
     branches:
-      - 'release/*.*.*'
+      - 'releases/*.*.*'
   workflow_dispatch:
     inputs:
       manual_branch:
-        description: "Specify a branch or tag (e.g., release/0.1.0)"
+        description: "Specify a branch or tag (e.g., releases/0.1.0)"
         required: false
         default: ""
 
@@ -35,7 +35,7 @@ jobs:
           else
             REF="${GITHUB_REF_NAME}"
           fi
-          VERSION="${REF#release/}"
+          VERSION="${REF#releases/}"
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
       - name: Build container image
