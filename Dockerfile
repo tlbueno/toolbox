@@ -62,15 +62,13 @@ RUN echo "ocp client install" && \
     ln -s /opt/ocp-client/oc /usr/local/bin/oc && \
     echo "mqtt-cli install" && \
     curl -sSL $(curl -sSL "https://api.github.com/repos/hivemq/mqtt-cli/releases/latest" | jq -r '.assets[] | .browser_download_url | select(test(".jar$"))') -o /usr/local/bin/mqtt-cli.jar && \
-    echo "logcli install" && \
-    curl -sSL $(curl -sSL "https://api.github.com/repos/grafana/loki/releases/latest" | jq --arg regex "logcli-linux-$buildArch.zip" -r '.assets[] | .browser_download_url | select(test($regex))') -o /tmp/logcli.zip && \
-    unzip /tmp/logcli.zip && \
-    mv logcli-linux-amd64 /usr/local/bin/logcli && \
-    rm -rf /tmp/logcli.zip && \
     echo "artemis install" && \
     export artemis_version=$(curl -sSL https://archive.apache.org/dist/activemq/activemq-artemis | grep "^<img" | sed -E -e 's#.*<a href="([0-9]+\.[0-9]+\.[0-9]+)/">.*#\1#' | sort -V | tail -1) && \
-    curl -sSL https://archive.apache.org/dist/activemq/activemq-artemis/${artemis_version}/apache-artemis-${artemis_version}-bin.tar.gz | \
-    tar -zx -C /opt && \
+    curl -sSL https://archive.apache.org/dist/activemq/activemq-artemis/${artemis_version}/apache-artemis-${artemis_version}-bin.tar.gz -o /tmp/artemis.zip && \
+    cd /tmp/ && \
+    tar -zxf /tmp/artemis.zip && \
+    rm /tmp/artemis.zip && \
+    mv /tmp/apache-artemis-${artemis_version} /opt && \
     ln -s /opt/apache-artemis-${artemis_version}/bin/artemis /usr/local/bin/artemis
 
 RUN echo "configuring sudo" && \

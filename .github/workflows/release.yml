@@ -7,31 +7,21 @@ on:
     branches:
       - 'releases/*.*.*'
   workflow_dispatch:
-    inputs:
-      manual_branch:
-        description: "Specify a branch or tag (e.g., releases/0.1.0)"
-        required: false
-        default: ""
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.inputs.manual_branch || github.ref_name }}
+          ref: ${{ github.ref_name }}
 
       - name: Determine version
         id: version
         run: |
-          if [ "${{ github.event.inputs.manual_branch }}" ]; then
-            REF="${{ github.event.inputs.manual_branch }}"
-          else
-            REF="${GITHUB_REF_NAME#releases/}"
-          fi
-          VERSION="${REF}"
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          REF="${GITHUB_REF_NAME#releases/}"
+          echo "VERSION=${REF}" >> $GITHUB_ENV
 
       - name: Build container image
         id: build-image
@@ -41,7 +31,7 @@ jobs:
           tags: ${{ env.VERSION }} latest
           containerfiles: |
             ./Containerfile
-          layers: true
+          layers: false
 
       - name: Push image to GitHub Container Registry
         uses: redhat-actions/push-to-registry@v2
