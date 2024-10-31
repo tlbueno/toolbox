@@ -28,9 +28,9 @@ jobs:
           if [ "${{ github.event.inputs.manual_branch }}" ]; then
             REF="${{ github.event.inputs.manual_branch }}"
           else
-            REF="${GITHUB_REF_NAME}"
+            REF="${GITHUB_REF_NAME#releases/}"
           fi
-          VERSION="${REF#releases/}"
+          VERSION="${REF}"
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
       - name: Build container image
