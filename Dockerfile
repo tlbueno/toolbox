@@ -6,7 +6,7 @@ ARG toolboxUserUid=1000
 ARG toolboxUserGroup=toolbox
 ARG toolboxUserHome=/home/toolbox
 
-LABEL org.opencontainers.image.source="https://ghcr.io/tlbueno/toolbox"
+LABEL org.opencontainers.image.source="https://github.com/tlbueno/toolbox"
 
 USER root
 
