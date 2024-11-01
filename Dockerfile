@@ -7,6 +7,7 @@ ARG toolboxUserGroup=toolbox
 ARG toolboxUserHome=/home/toolbox
 
 LABEL org.opencontainers.image.source="https://github.com/tlbueno/toolbox"
+LABEL org.opencontainers.image.description="An alpine linux container image with general tools to be used as a toolbox"
 
 USER root
 
