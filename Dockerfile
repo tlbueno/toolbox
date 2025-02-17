@@ -1,4 +1,4 @@
-FROM alpine:3.21.2
+FROM alpine:3.21.3
 
 ARG buildArch=amd64
 ARG toolboxUser=toolbox
