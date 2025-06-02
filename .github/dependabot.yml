@@ -11,8 +11,6 @@ updates:
       interval: "daily"
     assignees:
       - "tlbueno"
-    reviewers:
-      - "tlbueno"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -20,5 +18,4 @@ updates:
       interval: "daily"
     assignees:
       - "tlbueno"
-    reviewers:
-      - "tlbueno"
+
